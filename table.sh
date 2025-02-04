@@ -115,8 +115,7 @@ export class ${className}Component implements OnInit {
         options: [10, 25, 50]
     };
 
-    private columnCtrl = new FormControl([]);
-    public displayedColumns = toSignal(this.columnCtrl.valueChanges);
+    public displayedColumns = signal([]);
 
     ngOnInit(): void {
         this.sort.sortChange.subscribe((s) => this.matSort.set(s));
