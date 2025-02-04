@@ -21,9 +21,6 @@ if [[ -z "$path" ]]; then
   exit 1
 fi
 
-# Create directory structure if it doesn't exist
-mkdir -p "$path"
-
 # Generate the component using nx g @nx/angular:component command
 echo "Generating $component component..."
 nx g @nx/angular:component "$path/$component" --no-interactive
