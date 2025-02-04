@@ -15,7 +15,7 @@ if [[ -z "$component" ]]; then
 fi
 
 # Prompt user for path
-read -r -p "Path: (example - apps/projectname/src/app/shared/componentname)" path
+read -r -p "Path (example - apps/projectname/src/app/shared/componentname): " path
 if [[ -z "$path" ]]; then
   echo "Path cannot be empty."
   exit 1
