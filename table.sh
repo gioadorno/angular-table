@@ -75,13 +75,13 @@ import {
     signal,
     inject
 } from '@angular/core';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatTableModule } from '@angular/material/table';
-import { MatSort, MatSortModule, Sort } from '@angular/material/sort';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { toSignal } from '@angular/core/rxjs-interop';
+import {MatToolbarModule} from '@angular/material/toolbar';
+import {MatTableModule} from '@angular/material/table';
+import {MatSort, MatSortModule, Sort} from '@angular/material/sort';
+import {MatPaginatorModule, PageEvent} from '@angular/material/paginator';
+import {ReactiveFormsModule} from '@angular/forms';
+import {ActivatedRoute, Router} from '@angular/router';
+import {toSignal} from '@angular/core/rxjs-interop';
 
 @Component({
     selector: 'kb-$component',
