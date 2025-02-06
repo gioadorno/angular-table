@@ -82,19 +82,29 @@ end
 if create_columns; and true
     while true
         # Prompt for column name/key
-        read -P "Enter column name: " column_name
-        if test -z "$column_name"
+        read -P "Enter column key, title (e.g. - campaignName, Campaign): " user_input
+
+        # Check if input is empty
+        if test -z "$user_input"
             break
         end
 
-        # Prompt for column display title
-        read -P "Enter display title for $column_name: " display_title
+        # Split the input by the comma
+        set parts (string split "," $user_input)
 
-        # Create column with key and title
-        set column "{key: \"$column_name\", title: \"$display_title\"}"
+        # Check if the input has two parts (key and title)
+        if test (count $parts) -eq 2
+            set column_key (string trim (echo $parts[1]))  
+            set display_title (string trim (echo $parts[2])) 
 
-        # Add column to array
-        set columns $columns $column
+            # Create column object with key and title
+            set column "{key: \"$column_key\", title: \"$display_title\"}"
+
+            # Add the column to the columns array
+            set columns $columns $column
+        else
+            echo "Invalid input. Please enter a valid column key and title separated by a comma."
+        end
 
                 # Ask user if they want to add another column
         read -l -P "Do you want to add another column? (Y/n): " add_column
@@ -114,23 +124,21 @@ set columns_html
 set displayed_columns
 if test -n "$columns"
     for column in $columns
-    set column_name (echo $column | sed -E 's/.*key: "([^"]+)".*/\1/')
-    set column_title (echo $column | sed -E 's/.*title: "([^"]+)".*/\1/')
-        echo $column_name
-
+        set column_name (echo $column | sed -E 's/.*key: "([^"]+)".*/\1/')
+        set column_title (echo $column | sed -E 's/.*title: "([^"]+)".*/\1/')
         set columns_html "$columns_html
         <ng-container matColumnDef=\"$column_name\">
-            <th mat-header-cell *matHeaderCellDef>$column_title</th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>$column_title</th>
             <td mat-cell *matCellDef=\"let row\"></td>
         </ng-container>"
 
         # Add the column to displayedColumns array
-        set displayed_columns "$displayed_columns, $column"
+         if test -n "$displayed_columns"
+            set displayed_columns "$displayed_columns, $column"
+        else
+            set displayed_columns "$column"
+        end
     end
-
-        set displayed_columns (string join ", " $displayed_columns)
-      echo $columns_html # Output the HTML
-    echo $displayed_columns # Output the comma-separated column names
 end
 
 # Generate the component using nx g @nx/angular:component command
@@ -163,8 +171,8 @@ echo "<mat-toolbar>
 <table mat-table [dataSource]=\"dataSource.value()\" matSort matSortActive=\"created_at\" matSortDirection=\"desc\"
     matSortDisableClear>
 $columns_html
-    <tr mat-header-row *matHeaderRowDef=\"displayedColumns(); sticky: true\"></tr>
-    <tr mat-row *matRowDef=\"let row; columns: displayedColumns()\"></tr>
+    <tr mat-header-row *matHeaderRowDef=\"displayedColumns; sticky: true\"></tr>
+    <tr mat-row *matRowDef=\"let row; columns: displayedColumns\"></tr>
     <tr class=\"mat-mdc-row\" *matNoDataRow>
         <td class=\"mdc-data-table__cell\">No data found</td>
     </tr>
@@ -196,6 +204,11 @@ import {ReactiveFormsModule} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {toSignal} from '@angular/core/rxjs-interop';
 
+type Column = {
+	key: string;
+	title: string;
+};
+
 @Component({
     selector: '$prefix-$component',
     standalone: true,
@@ -219,7 +232,7 @@ export class $className"Component" implements OnInit {
     public dataSource = signal([]);
     private queryParams = toSignal(this.route.queryParams);
 
-    public displayedColumns = signal([$displayed_columns]);
+    public displayedColumns: Column[] = [$displayed_columns];
 
     ngOnInit(): void {
         this.sort()?.sortChange.subscribe((s) => this.matSort.set(s));
