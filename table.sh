@@ -21,6 +21,10 @@ if [[ -z "$path" ]]; then
   exit 1
 fi
 
+# Ask user if they want to create columns
+# read -e -r -p "Do you want to create columns? [Y/n]" YN
+# [[ $YN == "y" || $YN == "Y" || $YN == "" ]] && echo "test"
+
 # Generate the component using nx g @nx/angular:component command
 echo "Generating $component component..."
 nx g @nx/angular:component "$path/$component" --no-interactive
